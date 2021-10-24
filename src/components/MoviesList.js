@@ -2,7 +2,7 @@
 import MovieItem from './MovieItem'
 
 export default function MoviesList(props){
-
+   
    
     return(
         <div className="movies-wrapper">
@@ -11,5 +11,6 @@ export default function MoviesList(props){
             ))}
         </div>
     )
+
 
 }

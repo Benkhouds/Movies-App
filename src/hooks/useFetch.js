@@ -1,11 +1,12 @@
 import {useEffect,useState} from 'react'
 import axios from 'axios'
-export default function useFetch(url){
+export default function useFetch(term){
     const [data, setData] = useState([])
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState('')
     useEffect(()=>{
-        axios.get(url)
+        if(term){
+        axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${process.env.REACT_APP_API_KEY}&language=en-US&query=${term}&page=1`)
              .then((res)=>{
                
                    if(res.status !== 200){
@@ -19,8 +20,8 @@ export default function useFetch(url){
                    
              })
              .catch((err)=>console.log(err))
- 
-    },[url])
+        }
+    },[term])
     
     return {data, isLoading,error}
 }

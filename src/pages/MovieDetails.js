@@ -1,6 +1,7 @@
 
 import {  useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import Spinner from '../components/layout/Spinner'
 export default function MovieDetails(){
     const {id} = useParams()
     const [isLoading, setIsLoading] = useState(true)
@@ -31,7 +32,7 @@ export default function MovieDetails(){
             <h1>Trailer</h1>
 
             {error && <h3>{error}</h3>}  
-            {!error && (isLoading ? <h1>Loading...</h1>:<iframe width="560" height="315" src={`https://www.youtube.com/embed/${videoKey}`} title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>) }
+            {!error && (isLoading ?<Spinner/> :<iframe width="560" height="315" src={`https://www.youtube.com/embed/${videoKey}`} title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>) }
             
         </div>
     )
