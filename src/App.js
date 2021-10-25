@@ -11,7 +11,7 @@ function App() {
      <MoviesContextProvider>
          <Switch>
             <Route key="home" path="/" component={AllMovies} exact/>
-            <Route key="search" path="/movie" component={AllMovies} />
+            <Route key="search" path="/movie" component={AllMovies} exact/>
             <Route path="/id/:id" component={MovieDetails} exact/> 
             <Route path="*" component={NotFound} />
 

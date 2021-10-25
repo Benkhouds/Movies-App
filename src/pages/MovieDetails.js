@@ -1,7 +1,7 @@
 
 import {  useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import Spinner from '../components/layout/Spinner'
+import Spinner from '../components/UI/Spinner'
 export default function MovieDetails(){
     const {id} = useParams()
     const [isLoading, setIsLoading] = useState(true)

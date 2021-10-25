@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.theme-color{
+  background: linear-gradient(0.25turn, #90cea1,#3cbec9,#00b3e5);
+}
+
+.activity{
+  @apply absolute -left-1/4 h-full w-1/3 bg-gradient-to-r from-gray-800  to-gray-700;
+ animation: loading 1s infinite;
+ z-index: 10;
+}
+
+@keyframes loading {
+ 0%{
+     left: -25%;
+ }
+ 100%{
+     left: 100%;
+ }
+}
