@@ -25,7 +25,9 @@ export  function MoviesContextProvider({children}) {
     },[reset])
 
     //fetching the trending movies
-    async function fetchTrending(){     
+    async function fetchTrending(){    
+        setIsLoading(true);
+        setError(""); 
         const res = await axios.get(`${baseURL}/trending/movie/week?api_key=${process.env.REACT_APP_API_KEY}`)
         try{
             setIsLoading(false);
@@ -33,12 +35,12 @@ export  function MoviesContextProvider({children}) {
                 setError('error fetching data')
             }
             else{
-                console.log(res)
                 setMovies(res.data.results)
             }              
         } 
         catch(err){
             setError('error fetching data')
+            setIsLoading(false)
         }   
     }
 
@@ -56,7 +58,7 @@ export  function MoviesContextProvider({children}) {
             else{
                 const results = res.data.results
                 console.log(results)
-                results.length ? setMovies(results) : setError('No results found');
+                results.length ? setMovies(results) : setError(`No results found for "${term}"`);
             }       
         }
         catch(err){

@@ -1,6 +1,7 @@
 import { useContext,useEffect} from 'react'
 import MoviesList from '../components/MoviesList'
 import Layout from '../components/layout/Layout'
+import Error from '../components/UI/Error'
 import Spinner from '../components/UI/Spinner'
 import MoviesContext from '../store/movies-context'
 
@@ -30,7 +31,7 @@ export default function AllMovies({location,match, history}){
 
     return (
       <Layout>
-          {error  && <div>{error}</div>}
+          {error  && <Error message={error}/>}
           {isLoading && <Spinner/>} 
           {movies && !error && !isLoading && <MoviesList movies={movies}/>}
         
