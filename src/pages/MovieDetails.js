@@ -53,7 +53,7 @@ export default function MovieDetails(){
                  setIsLoading(false);
              })
 
-    },[])
+    },[id])
     function showIFrame(e){
        console.log(e)
     }
