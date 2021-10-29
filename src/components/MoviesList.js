@@ -30,7 +30,7 @@ export default function MoviesList({movies, hasMore, setPageNumber}){
 
      const lastMovieObserver = useCallback((node)=>{      
             if(observer.current) observer.current.disconnect()
-            observer.current = new IntersectionObserver(observerCallback,{threshold : 0.8 });
+            observer.current = new IntersectionObserver(observerCallback,{threshold :1 , rootMargin:'-60px'} );
             if(node){
               observer.current.observe(node); 
             }
