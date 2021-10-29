@@ -10,9 +10,7 @@ import useFetch from '../hooks/useFetch'
 export default function AllMovies({location,match, history}){
     
   const [searchTerm , setSearchTerm] = useState('')
-  const [pageNumber, setPageNumber] = useState(1);
-  const {movies, error , isLoading ,hasMore} = useFetch(searchTerm , pageNumber)
-  console.log(hasMore)
+  const {movies, error , isLoading ,hasMore} = useFetch(searchTerm)
   useEffect(()=>{ 
       const query= new URLSearchParams(location.search);
       if(match.path === "/movie"){
@@ -31,8 +29,8 @@ export default function AllMovies({location,match, history}){
     return (
       <Layout>
           {error  && <Error message={error}/>}
-          {isLoading && pageNumber===1 && <Spinner/>} 
-          {movies && !error && <MoviesList movies={movies} hasMore={hasMore} setPageNumber={setPageNumber} />}
+          {isLoading && <Spinner/>} 
+          {movies && !isLoading && !error && <MoviesList movies={movies} hasMore={hasMore} searchTerm={searchTerm}/>}
         
       </Layout>
     )

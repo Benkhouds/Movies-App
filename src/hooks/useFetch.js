@@ -8,9 +8,7 @@ const initialState={isLoading:true , error:'', movies:[],hasMore:false }
 
 function reducer(state, action){
     switch(action.type){
-        case 'reset':{
-            return {isLoading:true , error:'', movies:[], hasMore:false};
-        }
+ 
         case 'loading':{
             return {...state, isLoading:true , error:''}
         }
@@ -18,7 +16,7 @@ function reducer(state, action){
             return{ movies:[], hasMore:false , isLoading:false, error:action.setError}
         }
         case 'data':{
-            return {isLoading:false, error:"", movies: [...state.movies , ...action.setMovies], hasMore:action.setHasMore}
+            return {isLoading:false, error:"", movies: action.setMovies, hasMore:action.setHasMore}
         }
         default:{
             console.log("action is not supported");
@@ -28,26 +26,21 @@ function reducer(state, action){
 }
 
 
-export default function useFetch(searchTerm, pageNumber) {
+export default function useFetch(searchTerm) {
     const [state, dispatch] = useReducer(reducer, initialState);
   
-    //triggers every time the search term changes
-    useEffect(()=>{
-        dispatch({type:'reset'});
-    },[searchTerm])
-    
     //triggers whenever the searchTerm or the pageNumber changes
     useEffect(()=>{
         const cancelToken = axios.CancelToken;
         const source = cancelToken.source()
-        if(searchTerm.length) handleSearch(searchTerm, pageNumber, source.token)
+        if(searchTerm.length) handleSearch(searchTerm, source.token)
         return ()=>source.cancel();
-    },[searchTerm, pageNumber])  
+    },[searchTerm])  
     
     //updating the movies state with the searched data 
-    async function handleSearch(q,page, cancelToken){
+    async function handleSearch(q, cancelToken){
         dispatch({type:'loading'})
-        const searchUrl = `search/movie?api_key=${apiKey}&language=en-US&query=${q}&page=${page}`
+        const searchUrl = `search/movie?api_key=${apiKey}&language=en-US&query=${q}&page=1`
         try{    
             const res =await axios.get(`${baseURL}/${searchUrl}`,{cancelToken})
             if(res.status !== 200){
@@ -55,12 +48,10 @@ export default function useFetch(searchTerm, pageNumber) {
                 return Error(res.statusText)
             }
             else{
-                const hasMore =  res.data.total_pages > page ;
                 const results = res.data.results
                 console.log(res.data)
-                //has more
                 results.length ? 
-                dispatch({type:'data', setMovies:results, setHasMore:hasMore})  
+                dispatch({type:'data', setMovies:results, setHasMore:res.data.total_pages > 1})  
                     : 
                 dispatch({type:'error', setError:`No results found for "${q}"`});
             }       
@@ -76,24 +67,22 @@ export default function useFetch(searchTerm, pageNumber) {
         const cancelToken = axios.CancelToken;
         const source = cancelToken.source()
         if(!searchTerm){
-            fetchTrending(source.token, pageNumber); 
+            fetchTrending(source.token); 
         }
         return ()=>source.cancel();
-    },[searchTerm, pageNumber])
+    },[searchTerm])
 
     //fetching the trending movies
-    async function fetchTrending(cancelToken, page){    
+    async function fetchTrending(cancelToken){    
         dispatch({type:'loading'})
-        const trendingUrl = `trending/movie/week?api_key=${apiKey}&language=en-US&page=${page}`;
+        const trendingUrl = `trending/movie/week?api_key=${apiKey}&language=en-US&page=1`;
         try{
             const res = await axios.get(`${baseURL}/${trendingUrl}`,{ cancelToken})
             if(res.status !== 200){
                 dispatch({type:'error', setError: 'error fetching data'})
             }
             else{
-                const hasMore =  res.data.total_pages > page ;
-                console.log(hasMore)
-                dispatch({type:'data', setMovies: res.data.results, setHasMore:hasMore})
+                dispatch({type:'data', setMovies: res.data.results, setHasMore:res.data.total_pages > 1})
             }              
         } 
         catch(err){

@@ -1,57 +1,69 @@
 
 import MovieItem from './MovieItem'
 import {useState,useRef,useEffect, useCallback} from 'react'
+import useFetchMore from '../hooks/useFetchMore'
 import ErrorMessage from './UI/Error'
 import {v4 as uuid} from 'uuid';
-export default function MoviesList({movies, hasMore, setPageNumber}){
+import Spinner from './UI/Spinner'
 
-    const [loadStatus , setLoadStatus] = useState('');
-    const [currentlyLoadingMore, setCurrentlyLoadingMore] = useState(false);
+export default  function MoviesList({movies, hasMore, searchTerm}){
+    
+    const [pageNumber , setPageNumber ] = useState(1);
+
+    const {loading , error , list , hasMore : stillHasMore  } =  useFetchMore(searchTerm,pageNumber);
+
     const observer = useRef()
-
     useEffect(()=>{
-        if(movies.length){
-            setLoadStatus('loading')
-            setCurrentlyLoadingMore(false);
-        } else{
+        console.log(movies)
 
-            setLoadStatus('')
-        }
-    },[movies, hasMore])
+    },[movies])
+
     const observerCallback = useCallback(([entry], obs)=>{
-        if(entry.isIntersecting && !currentlyLoadingMore){
-            if(hasMore){
-                console.log('in')
-                setPageNumber((prev)=>prev + 1)
-                setCurrentlyLoadingMore(true);
-            }else{
-                setLoadStatus('No more Data')
+        
+        if(entry.isIntersecting){
+            if(!loading && ((pageNumber === 1 && hasMore) || (pageNumber > 1 && stillHasMore))){
+                obs.disconnect();
+                setPageNumber((prev)=>(prev + 1))      
             }
-            obs.disconnect();
         } 
-    },[hasMore, setPageNumber, currentlyLoadingMore])
+    },[stillHasMore, setPageNumber, pageNumber, hasMore, loading])
 
-     const lastMovieObserver = useCallback((node)=>{      
+     const lastMovieObserver = useCallback((node)=>{   
+            if(loading) return ;
             if(observer.current) observer.current.disconnect()
-            observer.current = new IntersectionObserver(observerCallback,{threshold :1 , rootMargin:'-60px'} );
+            observer.current = new IntersectionObserver(observerCallback);
             if(node){
               observer.current.observe(node); 
             }
        
-     },[observerCallback]);
+     },[observerCallback, loading]);
 
-
+    useEffect(()=>{console.log(loading)
+    },[list,loading])
     return(
         <>
-            <div className="w-full px-16 grid grid-cols-4 gap-6">
+            <div className="w-full px-16 grid grid-cols-4 gap-6 pb-4">
                 {movies.map((movie, i)=>{
-                    if(i === movies.length -1) return <MovieItem ref={lastMovieObserver} key={uuid()} data={movie}/>
-                    return <MovieItem key={uuid()} data={movie}/>
+                    if(pageNumber === 1 && i === movies.length - 1 ){
+                        return  <MovieItem key={uuid()} data={movie} ref={lastMovieObserver}/>
+                    }
+                     return <MovieItem key={uuid()} data={movie}/>
                 })}
+                {!loading && pageNumber > 1 && list.map((movie, i)=>{
+                    if(i=== list.length - 1){
+                        return  <MovieItem key={uuid()} data={movie} ref={lastMovieObserver}/>
+                    }
+                     return <MovieItem key={uuid()} data={movie}/>
+                })}
+               
             </div>
-            <div className="my-8 ">
-                {loadStatus ? <ErrorMessage message={loadStatus}/> :'' }
-            </div>
+            {loading && 
+                <div className="h-48">
+                    <Spinner/>
+                </div>
+            }
+            {error && <ErrorMessage message={error}/>}
+           
 
         </>
     )
