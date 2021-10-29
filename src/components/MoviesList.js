@@ -2,6 +2,7 @@
 import MovieItem from './MovieItem'
 import {useState,useRef,useEffect, useCallback} from 'react'
 import ErrorMessage from './UI/Error'
+import {v4 as uuid} from 'uuid';
 export default function MoviesList({movies, hasMore, setPageNumber}){
 
     const [loadStatus , setLoadStatus] = useState('');
@@ -40,8 +41,8 @@ export default function MoviesList({movies, hasMore, setPageNumber}){
         <>
             <div className="w-full px-16 grid grid-cols-4 gap-6">
                 {movies.map((movie, i)=>{
-                    if(i === movies.length -1) return <MovieItem ref={lastMovieObserver} key={movie.id} data={movie}/>
-                    return <MovieItem key={movie.id} data={movie}/>
+                    if(i === movies.length -1) return <MovieItem ref={lastMovieObserver} key={uuid()} data={movie}/>
+                    return <MovieItem key={uuid()} data={movie}/>
                 })}
             </div>
             <div className="my-8 ">
