@@ -601,6 +601,11 @@ video {
   margin-right: auto;
 }
 
+.my-8 {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
 .mt-4 {
   margin-top: 1rem;
 }

@@ -1,20 +1,24 @@
 
 import {Link} from 'react-router-dom'
-import {useRef} from 'react'
+import {useRef, forwardRef} from 'react'
 import placeholderImage from '../images/placeholder.jpg'
 
-export default function MovieItem(props){
+
+const MovieItem= forwardRef((props, ref)=>{
+
     const placeholderRef = useRef();
     const id = props.data.id
     const poster_path = props.data.poster_path
     const baseUrl ='https://image.tmdb.org/t/p/w500'
     let ratingColor = "text-green-500";
+
     if(props.data.vote_average<5){
       ratingColor = "text-red-700"
     }
     else if(props.data.vote_average <7){
       ratingColor = "text-yellow-400"
     }
+
     function showImage(e){
       if(e.target.src === window.location.origin+ placeholderImage){
          e.target.className+= " filter blur-sm";
@@ -27,7 +31,7 @@ export default function MovieItem(props){
        e.target.setAttribute('src', placeholderImage);
     }
     return(
-        <div key={props.data.id} className="group overflow-hidden relative">
+        <div key={props.data.id} className="group overflow-hidden relative" ref={ref}>
           <img className="hidden" src={poster_path ? `${baseUrl}${poster_path}`: placeholderImage} 
               style={{aspectRatio:2/3}} 
               alt={props.data.title} 
@@ -56,4 +60,6 @@ export default function MovieItem(props){
           
         </div>
     )
-}
+});
+
+export default MovieItem ;

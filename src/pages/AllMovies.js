@@ -1,21 +1,20 @@
-import { useContext,useEffect} from 'react'
+import { useState,useEffect} from 'react'
 import MoviesList from '../components/MoviesList'
 import Layout from '../components/layout/Layout'
 import Error from '../components/UI/Error'
 import Spinner from '../components/UI/Spinner'
-import MoviesContext from '../store/movies-context'
+import useFetch from '../hooks/useFetch'
 
 
 
 export default function AllMovies({location,match, history}){
     
-
-  const {movies, error , isLoading , setSearchTerm} = useContext(MoviesContext)
- 
+  const [searchTerm , setSearchTerm] = useState('')
+  const [pageNumber, setPageNumber] = useState(1);
+  const {movies, error , isLoading ,hasMore} = useFetch(searchTerm , pageNumber)
+  console.log(hasMore)
   useEffect(()=>{ 
-     
       const query= new URLSearchParams(location.search);
-      console.log(query.get("search"))
       if(match.path === "/movie"){
         if(query.get("search")){
           setSearchTerm(query.get("search"))
@@ -26,14 +25,14 @@ export default function AllMovies({location,match, history}){
       }
        
   } ,
-  [movies,location,match, history, setSearchTerm])
+  [location,match, history])
    
 
     return (
       <Layout>
           {error  && <Error message={error}/>}
-          {isLoading && <Spinner/>} 
-          {movies && !error && !isLoading && <MoviesList movies={movies}/>}
+          {isLoading && pageNumber===1 && <Spinner/>} 
+          {movies && !error && <MoviesList movies={movies} hasMore={hasMore} setPageNumber={setPageNumber} />}
         
       </Layout>
     )
