@@ -6,6 +6,7 @@ import {v4 as uuid} from 'uuid';
 export default function MoviesList({movies, hasMore, setPageNumber}){
 
     const [loadStatus , setLoadStatus] = useState('');
+    const [loadingMore, setLoadingMore] = useState(false);
     const observer = useRef()
 
     useEffect(()=>{
@@ -17,16 +18,18 @@ export default function MoviesList({movies, hasMore, setPageNumber}){
         }
     },[movies, hasMore])
     const observerCallback = useCallback(([entry], obs)=>{
-        if(entry.isIntersecting){
+        if(entry.isIntersecting && !loadingMore){
             if(hasMore){
                 console.log('in')
                 setPageNumber((prev)=>prev + 1)
+                setLoadingMore(true);
             }else{
                 setLoadStatus('No more Data')
             }
             obs.disconnect();
         } 
-    },[hasMore, setPageNumber])
+        return ()=>obs.disconnect()
+    },[hasMore, setPageNumber, loadingMore])
 
      const lastMovieObserver = useCallback((node)=>{      
             if(observer.current) observer.current.disconnect()
