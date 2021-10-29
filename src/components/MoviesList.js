@@ -16,7 +16,7 @@ export default function MoviesList({movies, hasMore, setPageNumber}){
             setLoadStatus('')
         }
     },[movies, hasMore])
-    const observerCallback = useCallback(([entry])=>{
+    const observerCallback = useCallback(([entry], obs)=>{
         if(entry.isIntersecting){
             if(hasMore){
                 console.log('in')
@@ -24,6 +24,7 @@ export default function MoviesList({movies, hasMore, setPageNumber}){
             }else{
                 setLoadStatus('No more Data')
             }
+            obs.disconnect();
         } 
     },[hasMore, setPageNumber])
 
